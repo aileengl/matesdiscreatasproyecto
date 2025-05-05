@@ -139,7 +139,7 @@ plt.tight_layout()
 # Mostrar el mapa
 plt.show()
 
-ef visualizar_subgrafo_dijkstra(grafo, origen, destino, posiciones):
+def visualizar_subgrafo_dijkstra(grafo, origen, destino, posiciones):
     try:
         # Calcular ruta más corta
         longitud, camino = nx.single_source_dijkstra(grafo, origen, destino)
