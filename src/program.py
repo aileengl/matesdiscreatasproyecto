@@ -3,8 +3,7 @@ import matplotlib.pyplot as plt
 
 # Crear el grafo
 G = nx.Graph()
-
-# Coordenadas GPS reales (sin acentos)
+#Se agregran los nodos con sus respectivas coordenadas (sacadas de google maps)
 nodos_posiciones = {
     "Area gimnasio": (19.05391, -98.287331),
     "Moe Williams": (19.054415, -98.2867),
@@ -30,28 +29,28 @@ nodos_posiciones = {
     "Agora": (19.053081, -98.281148),
     "Edificio de HU": (19.05284, -98.28078),
     "Colegio Ignacio Bernal": (19.05176, -98.28012),
-    "Cancha de Futbol Rapido": (19.05545, -98.28019),
+    "Cancha de Futbol Rapido": (19.05545, -98.28019), 
     "RH": (19.05637, -98.28225),
     "Planta Fisica": (19.05645, -98.28328),
     "Servicios Escolares": (19.05502, -98.2823),
     "Banderas": (19.0539, -98.28293)
 }
 
-# Función para convertir coordenadas
+# Convertir coordenadas GPS a un sistema de coordenadas plano para mejor visualización
 def convert_coords(coords):
     lat, lon = coords
-    x = (lon + 98.29) * 10000
+    x = (lon + 98.29) * 10000  
     y = (lat - 19.05) * 10000
     return (x, y)
 
 posiciones_ajustadas = {nodo: convert_coords(coords) for nodo, coords in nodos_posiciones.items()}
 
-# Agregar nodos
+# Agregar nodos al grafo
 G.add_nodes_from(nodos_posiciones.keys())
 
-# Aristas con pesos (sin acentos y consistentes)
+# Aristas con pesos (distancias (sacadas de google maps))
 aristas_validas = [
-    ("Moe Williams", "Area gimnasio", 111.86),
+("Moe Williams", "Area gimnasio", 111.86),
     ("Pista de atletismo", "Moe Williams", 119.75),
     ("Pista de atletismo", "Hostal/Residencia", 58.55),
     ("Cancha de Futbol 7", "Moe Williams", 128.47),
@@ -108,8 +107,37 @@ aristas_validas = [
     ("Servicios Escolares", "Planta Fisica", 229.4),
     ("Banderas", "Servicios Escolares", 146.09)
 ]
-
+# Agregar aristas al grafo
 G.add_weighted_edges_from(aristas_validas)
+
+# Configurar el tamaño de la figura
+plt.figure(figsize=(15, 12))
+
+# Dibujar el grafo con las posiciones ajustadas
+nx.draw(G, 
+        pos=posiciones_ajustadas,
+        with_labels=True,
+        node_size=1000,
+        node_color='lightblue',
+        font_size=12,
+        font_weight='bold',
+        edge_color='gray',
+        width=1.5)
+
+# Dibujar etiquetas de peso en las aristas
+edge_labels = nx.get_edge_attributes(G, 'weight')
+nx.draw_networkx_edge_labels(G, 
+                            pos=posiciones_ajustadas,
+                            edge_labels=edge_labels,
+                            font_size=7,
+                            label_pos=0.5)
+
+# Agregar título y ajustar layout
+plt.title("Mapa de la UDLAP con coordenadas GPS", size=15)
+plt.tight_layout()
+
+# Mostrar el mapa
+plt.show()
 
 def visualizar_subgrafo_dijkstra(grafo, origen, destino, posiciones):
     try:
@@ -124,22 +152,22 @@ def visualizar_subgrafo_dijkstra(grafo, origen, destino, posiciones):
         plt.figure(figsize=(14, 10))
         
         # Dibujar el grafo completo (fondo)
-        nx.draw_networkx_nodes(grafo, posiciones, node_size=300, node_color='lightgray', alpha=0.3)
+        nx.draw_networkx_nodes(grafo, posiciones, node_size=1000, node_color='lightgray', alpha=0.3)
         nx.draw_networkx_edges(grafo, posiciones, edge_color='lightgray', width=1, alpha=0.2)
-        nx.draw_networkx_labels(grafo, posiciones, font_size=7, alpha=0.5)
+        nx.draw_networkx_labels(grafo, posiciones, font_size=12, alpha=0.5)
         
         # Dibujar el subgrafo de Dijkstra (resaltado)
-        nx.draw_networkx_nodes(subgrafo, posiciones, node_size=500, node_color='#1f78b4')
+        nx.draw_networkx_nodes(subgrafo, posiciones, node_size=1000, node_color='lightsteelblue')
         nx.draw_networkx_edges(subgrafo, posiciones, edge_color='#ff7f0e', width=3, alpha=0.8)
-        nx.draw_networkx_labels(subgrafo, posiciones, font_size=8, font_weight='bold')
+        nx.draw_networkx_labels(subgrafo, posiciones, font_size=12)
         
         # Dibujar etiquetas de peso solo para el camino
         edge_labels = {(u, v): grafo.edges[u, v]['weight'] for u, v in subgrafo.edges()}
         nx.draw_networkx_edge_labels(subgrafo, posiciones, edge_labels=edge_labels, font_size=8)
         
         # Resaltar nodos de inicio y fin
-        nx.draw_networkx_nodes(grafo, posiciones, nodelist=[origen], node_size=700, node_color='#2ca02c')
-        nx.draw_networkx_nodes(grafo, posiciones, nodelist=[destino], node_size=700, node_color='#d62728')
+        nx.draw_networkx_nodes(grafo, posiciones, nodelist=[origen], node_size=1000, node_color='plum')
+        nx.draw_networkx_nodes(grafo, posiciones, nodelist=[destino], node_size=1000, node_color='palegreen')
         
         plt.title(f"Ruta más corta: {origen} → {destino}\nDistancia total: {longitud:.2f} metros", pad=20)
         plt.axis('off')
